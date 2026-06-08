@@ -4,6 +4,7 @@ import { resolve } from 'path';
 
 export default defineConfig({
   plugins: [react()],
+  base: '/oka-water-calculator-pro/',
   resolve: {
     alias: { '@': resolve(__dirname, './src') },
   },
