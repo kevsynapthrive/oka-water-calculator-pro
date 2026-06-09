@@ -220,6 +220,35 @@ export const SAMPLE_SCENARIOS: Record<string, Partial<AppState>> = {
       { id: 'com', name: 'Commercial',  count: 180,   avgMonthlyUsage: 15_000, usageStdDev: null, rateStructureId: 'rs-res' },
     ],
   },
+  'medium-rural': {
+    community: {
+      name: 'Mid-Size Rural System',
+      state: 'OK',
+      medianHouseholdIncome: 48_000,
+      povertyLevelIncome: 27_750,
+      belowPovertyPercent: 18,
+      affordabilityReferenceUsage: 7_500,
+    },
+    system: { waterLossPercent: 15, currentReserveBalance: 100_000 },
+    financial: {
+      annualOperatingCost: 975_000,
+      existingAnnualDebt: 0,
+      existingDebtRemainingYears: 0,
+      infrastructureReplacementCost: 6_000_000,
+      assetLifespanYears: 30,
+      borrowingRatePercent: 3.5,
+      reserveEarningRatePercent: 1.5,
+      inflationRatePercent: 2.5,
+      customerGrowthRatePercent: 0.5,
+      projectionYears: 20,
+      targetReserveBalance: 300_000,
+      costAllocation: { fixedCostPercent: 40, commodityCostPercent: 33 },
+    },
+    customerClasses: [
+      { id: 'res', name: 'Residential', count: 1_500, avgMonthlyUsage: 5_000, usageStdDev: 2_000, rateStructureId: 'rs-res' },
+      { id: 'com', name: 'Commercial',  count: 120,   avgMonthlyUsage: 15_000, usageStdDev: null,  rateStructureId: 'rs-res' },
+    ],
+  },
   'growing-suburb': {
     community: {
       name: 'Newcastle, OK',

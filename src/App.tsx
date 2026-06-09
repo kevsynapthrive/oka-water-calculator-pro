@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 // Layout
 import { Header } from './components/layout/Header';
+import { SetupWizard } from './components/wizard/SetupWizard';
 
 // Input forms
 import { CommunityInfo } from './components/inputs/CommunityInfo';
@@ -41,6 +42,13 @@ const DISCLAIMER = `This tool is for planning and educational purposes only. Res
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('inputs');
   const [disclaimerAck, setDisclaimerAck] = useState(false);
+  const [wizardOpen, setWizardOpen] = useState(false);
+
+  useEffect(() => {
+    if (disclaimerAck && !localStorage.getItem('oka-wizard-completed')) {
+      setWizardOpen(true);
+    }
+  }, [disclaimerAck]);
 
   if (!disclaimerAck) {
     return (
@@ -65,7 +73,14 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-stone-50">
-      <Header />
+      <Header onOpenWizard={() => setWizardOpen(true)} />
+
+      {wizardOpen && (
+        <SetupWizard
+          onClose={() => setWizardOpen(false)}
+          onComplete={() => { setWizardOpen(false); setActiveTab('current'); }}
+        />
+      )}
 
       {/* Tab Navigation */}
       <div className="sticky top-14 z-10 border-b border-gray-200 bg-white shadow-sm">

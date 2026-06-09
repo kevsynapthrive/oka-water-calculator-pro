@@ -3,7 +3,11 @@ import { useStore } from '../../store';
 import { exportToJSON, importFromJSON } from '../../utils/export';
 import { SAMPLE_SCENARIOS } from '../../store/defaults';
 
-export const Header: React.FC = () => {
+interface HeaderProps {
+  onOpenWizard?: () => void;
+}
+
+export const Header: React.FC<HeaderProps> = ({ onOpenWizard }) => {
   const state = useStore();
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -56,6 +60,17 @@ export const Header: React.FC = () => {
 
         {/* Actions */}
         <div className="flex items-center gap-2">
+          {onOpenWizard && (
+            <button
+              onClick={onOpenWizard}
+              className="flex items-center gap-1.5 rounded-lg border border-brand-300 bg-brand-50 px-3 py-1.5 text-sm font-medium text-brand-700 hover:bg-brand-100 focus:outline-none focus:ring-2 focus:ring-brand-600"
+            >
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+              </svg>
+              Setup Guide
+            </button>
+          )}
           <button
             onClick={handleExport}
             className="flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-600"
