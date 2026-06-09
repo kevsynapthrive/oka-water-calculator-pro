@@ -6,6 +6,78 @@ import { formatCurrency, formatPercent, formatGallons } from '../../utils/format
 import { calculateWaterLoss } from '../../engine/waterLoss';
 import { calculateSystemRevenue } from '../../engine/revenue';
 
+interface ScenarioProps {
+  currentNrwPct: number;
+  totalBilledPerYear: number;
+  annualOperatingCost: number;
+  weightedRate: number;
+  currentCostOfLoss: number;
+}
+
+const NRWSavingsScenarios: React.FC<ScenarioProps> = ({
+  currentNrwPct,
+  totalBilledPerYear,
+  annualOperatingCost,
+  weightedRate,
+  currentCostOfLoss,
+}) => {
+  const targets = [15, 10, 5].filter((t) => t < currentNrwPct);
+  if (targets.length === 0) return null;
+
+  const rows = targets.map((targetPct) => {
+    const r = calculateWaterLoss({
+      totalBilledGallonsPerYear: totalBilledPerYear,
+      lossPercentOfProduction: targetPct,
+      annualOperatingCost,
+      weightedAvgRevenueRatePerKgal: weightedRate,
+    });
+    const annualSavings = currentCostOfLoss - r.productionCostOfLoss;
+    return { targetPct, annualSavings, tenYearSavings: annualSavings * 10 };
+  });
+
+  return (
+    <div className="mt-6">
+      <h4 className="mb-1 text-sm font-semibold text-gray-700">NRW Reduction — Savings Scenarios</h4>
+      <p className="mb-3 text-xs text-gray-500">
+        Estimated reduction in annual production O&M cost if non-revenue water were reduced to the target level.
+        Useful for calculating payback periods on leak-detection programs and grant cost-benefit narratives.
+      </p>
+      <div className="overflow-x-auto rounded-lg border border-gray-200">
+        <table className="min-w-full divide-y divide-gray-200 text-sm">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-4 py-2 text-left font-medium text-gray-500">Target NRW</th>
+              <th className="px-4 py-2 text-left font-medium text-gray-500">Benchmark</th>
+              <th className="px-4 py-2 text-right font-medium text-gray-500">Annual Savings</th>
+              <th className="px-4 py-2 text-right font-medium text-gray-500">10-Year Cumulative</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100 bg-white">
+            {rows.map(({ targetPct, annualSavings, tenYearSavings }) => (
+              <tr key={targetPct} className={targetPct === 10 ? 'bg-green-50' : ''}>
+                <td className="px-4 py-2 font-semibold tabular-nums">{targetPct}%</td>
+                <td className="px-4 py-2 text-gray-500 text-xs">
+                  {targetPct <= 5 ? 'Excellent' : targetPct <= 10 ? 'AWWA well-managed' : 'AWWA acceptable'}
+                </td>
+                <td className="px-4 py-2 text-right tabular-nums font-semibold text-green-700">
+                  {formatCurrency(annualSavings)}/yr
+                </td>
+                <td className="px-4 py-2 text-right tabular-nums text-gray-700">
+                  {formatCurrency(tenYearSavings)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p className="mt-2 text-xs text-gray-400">
+        Savings represent reduced pumping and treatment costs (O&M basis). Does not include capital cost of
+        leak detection, pipe replacement, or meter upgrade programs needed to achieve the reduction.
+      </p>
+    </div>
+  );
+};
+
 export const WaterLossPanel: React.FC = () => {
   const { system, financial, customerClasses, rateStructures, currentRateStructureId } = useStore();
 
@@ -117,6 +189,14 @@ export const WaterLossPanel: React.FC = () => {
           Production cost is the O&M overhead of pumping and treating water that never reaches a customer. The system is already billing only metered volume — the impact is higher unit cost per delivered gallon.
         </p>
       </div>
+
+      <NRWSavingsScenarios
+        currentNrwPct={nrwPct}
+        totalBilledPerYear={totalBilledPerYear}
+        annualOperatingCost={financial.annualOperatingCost}
+        weightedRate={weightedRate}
+        currentCostOfLoss={result.productionCostOfLoss}
+      />
     </SectionCard>
   );
 };

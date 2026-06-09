@@ -147,6 +147,11 @@ export const AdvisorPanel: React.FC = () => {
           <li>DSCR minimum: {advisorSettings.minDSCR}× (USDA Rural Development)</li>
           <li>Max annual rate increase: {advisorSettings.maxAnnualIncreasePercent}%</li>
           <li>Affordability threshold: {advisorSettings.epaAffordabilityThresholdPercent}% of MHI at {state.community.affordabilityReferenceUsage.toLocaleString()} gal/month</li>
+          <li>
+            <strong>Tier 4 (unlimited) rate assumption:</strong> capacity cost is estimated assuming
+            above-average usage in Tier 4 equals ~50% of system average per customer. This may
+            understate Tier 4 rates for systems with significant heavy commercial or irrigation users.
+          </li>
           <li>This tool is for planning purposes only. Formal rate adoption requires a certified rate study by a licensed engineer.</li>
         </ul>
       </div>
