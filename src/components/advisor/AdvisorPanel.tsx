@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useStore } from '../../store';
 import { SectionCard } from '../shared/SectionCard';
 import { MetricCard } from '../shared/MetricCard';
@@ -6,6 +6,57 @@ import { StatusBadge } from '../shared/StatusBadge';
 import { formatCurrency, formatDSCR, formatPercent, formatRatePerKgal } from '../../utils/format';
 import { runAdvisor } from '../../engine/advisor';
 import { dscrStatus, dscrLabel, dscrColorClass } from '../../engine/dscr';
+
+interface SolvencyGroupProps {
+  warnings: string[];
+  maxShortfall: number;
+  capPct: number;
+}
+
+const SolvencyWarningGroup: React.FC<SolvencyGroupProps> = ({ warnings, maxShortfall, capPct }) => {
+  const [expanded, setExpanded] = useState(false);
+
+  // Parse affected year numbers for the summary line
+  const years = warnings
+    .map((w) => { const m = w.match(/^Year (\d+):/); return m ? parseInt(m[1], 10) : null; })
+    .filter((y): y is number => y !== null)
+    .sort((a, b) => a - b);
+
+  const yearSummary = years.length === 1
+    ? `Year ${years[0]}`
+    : `${years.length} years (${years[0]}–${years[years.length - 1]})`;
+
+  return (
+    <div className="mb-5 rounded-lg border border-amber-200 bg-amber-50">
+      <button
+        className="flex w-full items-start gap-3 px-4 py-3 text-left"
+        onClick={() => setExpanded((v) => !v)}
+        type="button"
+      >
+        <span className="mt-0.5 shrink-0 text-amber-500">⚠</span>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-amber-800">
+            Rate cap binding in {yearSummary} — max shortfall ${maxShortfall.toLocaleString()}
+          </p>
+          <p className="mt-0.5 text-xs text-amber-700">
+            The {capPct}% annual increase cap prevented full cost recovery in {warnings.length} projection{warnings.length > 1 ? 's' : ''}.
+            Consider a higher cap, grants, or cost reductions.
+          </p>
+        </div>
+        <span className="ml-2 shrink-0 text-xs text-amber-600 font-medium">
+          {expanded ? 'Hide ▲' : 'Details ▼'}
+        </span>
+      </button>
+      {expanded && (
+        <div className="border-t border-amber-200 px-4 py-3 space-y-1.5">
+          {warnings.map((w, i) => (
+            <p key={i} className="text-xs text-amber-700">{w}</p>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 export const AdvisorPanel: React.FC = () => {
   const state = useStore();
@@ -34,15 +85,36 @@ export const AdvisorPanel: React.FC = () => {
 
   const dscrSt = dscrStatus(year1.dscr);
 
+  // Partition warnings: group solvency non-convergence warnings separately
+  const SOLVENCY_MARKER = 'could not achieve full cost recovery';
+  const solvencyWarnings = warnings.filter((w) => w.includes(SOLVENCY_MARKER));
+  const otherWarnings = warnings.filter((w) => !w.includes(SOLVENCY_MARKER));
+
+  // Extract max shortfall from solvency warnings for the summary line
+  const maxShortfall = solvencyWarnings.reduce((max, w) => {
+    const m = w.match(/Revenue shortfall: \$([0-9,]+)/);
+    const n = m ? parseInt(m[1].replace(/,/g, ''), 10) : 0;
+    return Math.max(max, n);
+  }, 0);
+
   return (
     <SectionCard
       title="Financial Advisor"
       subtitle="AWWA M1 cost-of-service rate recommendations with DSCR and affordability constraints"
     >
-      {/* Warnings */}
-      {warnings.length > 0 && (
+      {/* Solvency warnings — collapsed into a single summary when there are multiple */}
+      {solvencyWarnings.length > 0 && (
+        <SolvencyWarningGroup
+          warnings={solvencyWarnings}
+          maxShortfall={maxShortfall}
+          capPct={advisorSettings.maxAnnualIncreasePercent}
+        />
+      )}
+
+      {/* Other warnings (DSCR below target, reserve overdraft) — shown individually */}
+      {otherWarnings.length > 0 && (
         <div className="mb-5 space-y-2">
-          {warnings.map((w, i) => (
+          {otherWarnings.map((w, i) => (
             <div key={i} className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
               ⚠ {w}
             </div>

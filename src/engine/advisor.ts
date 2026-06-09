@@ -269,10 +269,13 @@ export function runAdvisor(
         iterations++;
       }
 
-      if (iterations >= 200 && revenue < need) {
+      const shortfall = need - revenue;
+      // Only warn for material shortfalls. Sub-1% residuals after 200 iterations
+      // are rounding artifacts from cent-precision rate storage, not real gaps.
+      if (iterations >= 200 && shortfall > Math.max(500, need * 0.01)) {
         warnings.push(
           `Year ${y}: Rate adjustment could not achieve full cost recovery within the ${settings.maxAnnualIncreasePercent}% annual increase cap. ` +
-          `Revenue shortfall: $${Math.round(need - revenue).toLocaleString()}. Consider additional grants, cost reductions, or a longer transition period.`,
+          `Revenue shortfall: $${Math.round(shortfall).toLocaleString()}. Consider additional grants, cost reductions, or a longer transition period.`,
         );
       }
 
