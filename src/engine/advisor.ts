@@ -62,7 +62,7 @@ function revenueNeedForYear(appState: AppState, year: number): number {
   const currentReserve = appState.system.currentReserveBalance;
   const reserveContrib = annualSinkingFundContribution(
     financial.infrastructureReplacementCost * inf,
-    Math.max(1, financial.assetLifespanYears - year),
+    financial.assetLifespanYears,
     financial.reserveEarningRatePercent,
     currentReserve,
   );
@@ -269,6 +269,13 @@ export function runAdvisor(
         iterations++;
       }
 
+      if (iterations >= 200 && revenue < need) {
+        warnings.push(
+          `Year ${y}: Rate adjustment could not achieve full cost recovery within the ${settings.maxAnnualIncreasePercent}% annual increase cap. ` +
+          `Revenue shortfall: $${Math.round(need - revenue).toLocaleString()}. Consider additional grants, cost reductions, or a longer transition period.`,
+        );
+      }
+
       // DSCR check
       let debtService = 0;
       if (y < financial.existingDebtRemainingYears) debtService += financial.existingAnnualDebt;
@@ -317,7 +324,7 @@ export function runAdvisor(
 
     const reserveContrib = annualSinkingFundContribution(
       financial.infrastructureReplacementCost * inf,
-      Math.max(1, financial.assetLifespanYears - y),
+      financial.assetLifespanYears,
       financial.reserveEarningRatePercent,
       reserveBalance,
     );
@@ -331,7 +338,13 @@ export function runAdvisor(
 
     const revenueGap = projectedRevenue - need;
     reserveBalance += reserveContrib + yearGrants - reserveWithdrawals;
-    if (reserveBalance > 0) {
+    if (reserveBalance < 0) {
+      warnings.push(
+        `Year ${y}: Reserve fund balance went negative ($${Math.round(-reserveBalance).toLocaleString()} overdraft). ` +
+        `Capital project withdrawals exceed available funds.`,
+      );
+      reserveBalance = 0;
+    } else {
       reserveBalance *= 1 + financial.reserveEarningRatePercent / 100;
     }
 

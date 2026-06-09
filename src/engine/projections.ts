@@ -112,7 +112,7 @@ export function buildProjection(inputs: ProjectionInputs): ProjectionYear[] {
     // Infrastructure reserve contribution (sinking fund, consistent)
     const reserveContribution = annualSinkingFundContribution(
       financial.infrastructureReplacementCost * inflationFactor, // inflation-adjusted target
-      Math.max(1, sinkingFundHorizon - y),
+      sinkingFundHorizon,
       financial.reserveEarningRatePercent,
       reserveBalance,
     );
@@ -137,8 +137,9 @@ export function buildProjection(inputs: ProjectionInputs): ProjectionYear[] {
 
     // Reserve balance update
     reserveBalance += reserveContribution + yearGrants - reserveWithdrawals;
-    // Apply earning rate to positive balance
-    if (reserveBalance > 0) {
+    if (reserveBalance < 0) {
+      reserveBalance = 0; // clamp; advisor.ts emits the overdraft warning
+    } else {
       reserveBalance *= 1 + financial.reserveEarningRatePercent / 100;
     }
 
