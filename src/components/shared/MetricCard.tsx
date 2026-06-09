@@ -10,14 +10,14 @@ interface MetricCardProps {
 }
 
 const statusClasses = {
-  good:    'border-green-200 bg-green-50',
+  good:    'border-nature-200 bg-nature-50',
   warn:    'border-yellow-200 bg-yellow-50',
   danger:  'border-red-200 bg-red-50',
   neutral: 'border-gray-200 bg-white',
 };
 
 const valueClasses = {
-  good:    'text-green-800',
+  good:    'text-nature-800',
   warn:    'text-yellow-800',
   danger:  'text-red-800',
   neutral: 'text-gray-900',

@@ -16,7 +16,7 @@ export const SectionCard: React.FC<SectionCardProps> = ({
   const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <div className={`rounded-xl border border-gray-200 bg-white shadow-sm ${className}`}>
+    <div className={`rounded-xl border border-gray-200 border-l-[3px] border-l-brand-600 bg-white shadow-sm ${className}`}>
       <div
         className={`flex items-center justify-between px-6 py-4 ${collapsible ? 'cursor-pointer select-none hover:bg-gray-50' : ''}`}
         onClick={collapsible ? () => setOpen((o) => !o) : undefined}

@@ -44,17 +44,17 @@ export default function App() {
 
   if (!disclaimerAck) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-stone-50 flex items-center justify-center p-4">
         <div className="max-w-xl w-full rounded-2xl border border-gray-200 bg-white p-8 shadow-lg">
-          <h1 className="text-xl font-bold text-gray-900 mb-1">OKA Water Rate Calculator Pro</h1>
-          <p className="text-sm text-blue-700 font-medium mb-4">Professional Water Rate Planning Tool</p>
+          <h1 className="text-xl font-bold text-gray-900 mb-1">Oka' Water Rate Calculator Pro</h1>
+          <p className="text-sm text-brand-700 font-medium mb-4">Professional Water Rate Planning Tool</p>
           <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 mb-6 text-sm text-amber-800">
             <p className="font-semibold mb-2">Important Disclaimer</p>
             <p>{DISCLAIMER}</p>
           </div>
           <button
             onClick={() => setDisclaimerAck(true)}
-            className="w-full rounded-lg bg-blue-600 px-4 py-3 text-white font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="w-full rounded-lg bg-brand-600 px-4 py-3 text-white font-semibold hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-600 focus:ring-offset-2"
           >
             I Understand — Continue to Calculator
           </button>
@@ -64,7 +64,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-stone-50">
       <Header />
 
       {/* Tab Navigation */}
@@ -77,7 +77,7 @@ export default function App() {
                 onClick={() => setActiveTab(id)}
                 className={`whitespace-nowrap border-b-2 px-5 py-3 text-sm font-medium transition-colors ${
                   activeTab === id
-                    ? 'border-blue-600 text-blue-700'
+                    ? 'border-brand-600 text-brand-700'
                     : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                 }`}
               >
@@ -143,8 +143,20 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="mt-12 border-t border-gray-200 bg-white py-6 text-center text-xs text-gray-400">
-        <p>OKA Water Rate Calculator Pro — For planning purposes only. Not a substitute for a certified rate study.</p>
+      <footer className="mt-12 border-t border-gray-200 bg-white py-8 text-center text-xs text-gray-400">
+        <p className="text-sm font-medium text-gray-600">
+          Developed by{' '}
+          <a
+            href="https://www.okainstitute.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-brand-600 hover:text-brand-700 hover:underline"
+          >
+            Oka' Institute
+          </a>
+          {' '}— Oka' means water, and that means everything.
+        </p>
+        <p className="mt-2">For planning purposes only. Not a substitute for a certified rate study.</p>
         <p className="mt-1">
           Methodology: AWWA M1 Cost-of-Service · Monthly-compounding amortization · Sinking fund reserves ·
           Lognormal usage distribution · EPA affordability benchmark
