@@ -74,20 +74,7 @@ export const Header: React.FC = () => {
             </svg>
             Import
           </button>
-          <button
-            onClick={state.toggleMathMode}
-            className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-600 ${
-              state.showMathMode
-                ? 'border-brand-600 bg-brand-50 text-brand-700'
-                : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
-            }`}
-          >
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-            </svg>
-            {state.showMathMode ? 'Math On' : 'Show Math'}
-          </button>
-          <input ref={fileRef} type="file" accept=".json" className="hidden" onChange={handleImport} />
+<input ref={fileRef} type="file" accept=".json" className="hidden" onChange={handleImport} />
         </div>
       </div>
     </header>
